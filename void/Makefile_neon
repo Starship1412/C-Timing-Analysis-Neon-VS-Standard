@@ -1,0 +1,20 @@
+CC=arm-none-eabi-gcc
+# CFLAGS=-mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -c -Wall -I./include
+# LDFLAGS=-mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,lscript.ld -Llib
+CFLAGS=-mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -c -Wall -I./include
+LDFLAGS=-mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,lscript.ld -Llib
+LIBS=-Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+
+all: neon.elf
+
+neon.o: neon.c
+	$(CC) -O3 $(CFLAGS) -o neon.o neon.c
+
+platform.o: platform.c
+	$(CC) $(CFLAGS) -o platform.o platform.c
+
+neon.elf: neon.o platform.o
+	$(CC) $(LDFLAGS) -o neon.elf neon.o platform.o $(LIBS)
+
+clean:
+	rm *.o *.elf
